@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#121316">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>PLAYCORE</title>
+<link rel="icon" href="logo-mark-192.png">
+<link rel="apple-touch-icon" href="logo-mark-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap">
+<style>
+/* Тёмный мобильный портал в духе Roblox: шапка с логотипом, плитки игр, нижняя панель вкладок.
+   Без анимированного фона, размытия и фильтров — чтобы не тормозило на телефоне. */
+:root{
+  --bg:#121316;
+  --card:#232529;
+  --card2:#2d3036;
+  --ink:#fff;
+  --muted:#b5b7bd;
+  --line:#2f3238;
+  --teal:#3fb4c4;
+  --teal-d:#2a8d9c;
+  --blue:#3b82f6;
+  --red:#ef4444;
+  --serif:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px);
+  --sar:env(safe-area-inset-right,0px);
+  --bar:60px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 var(--sans);overscroll-behavior-y:none}
+button{font:inherit;color:inherit;touch-action:manipulation}
+a{color:inherit;text-decoration:none}
+img,svg{display:block}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+[hidden]{display:none!important}
+
+/* ---------- шапка ---------- */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;background:var(--bg);
+  padding:calc(var(--sat) + 10px) calc(var(--sar) + 14px) 10px calc(var(--sal) + 14px)}
+.ico{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#fff;cursor:pointer;flex:none}
+.ico:active{background:var(--card)}
+.ico svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.mark{height:36px;width:auto}
+.bt{display:flex;flex-direction:column;line-height:1;min-width:0}
+.bt b{font:700 25px/1 var(--serif);letter-spacing:.03em;white-space:nowrap}
+.bt small{margin-top:4px;font-size:8.5px;font-weight:500;letter-spacing:.27em;color:var(--muted);white-space:nowrap}
+.sp{flex:1}
+.top .ico.has::after{content:"";position:absolute;margin:-14px 0 0 14px;width:10px;height:10px;border-radius:50%;background:var(--teal);border:2px solid var(--bg)}
+
+/* ---------- экран ---------- */
+main{padding:6px calc(var(--sar) + 16px) calc(var(--bar) + var(--sab) + 28px) calc(var(--sal) + 16px);max-width:1100px;margin:0 auto}
+.view{display:none}
+.view.on{display:block}
+h2.sec{display:flex;align-items:center;gap:6px;margin:26px 0 14px;font-size:24px;font-weight:700;letter-spacing:-.01em}
+h2.sec:first-child{margin-top:12px}
+h2.sec svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+
+/* ---------- плитки игр ---------- */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 14px}
+.card{min-width:0;cursor:pointer;-webkit-user-select:none;user-select:none}
+.thumb{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--card)}
+.thumb img,.thumb svg{width:100%;height:100%;object-fit:cover}
+.card:active .thumb{opacity:.85}
+.card h3{margin:9px 0 2px;font-size:17px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta{display:flex;align-items:center;gap:6px;margin:0;color:var(--muted);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta svg{width:18px;height:18px;flex:none;fill:currentColor}
+.heart{position:absolute;bottom:6px;right:6px;display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:50%;background:rgba(18,19,22,.62);color:#fff;cursor:pointer}
+.heart svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linejoin:round}
+.heart[aria-pressed="true"] svg{fill:var(--red);stroke:var(--red)}
+
+.hrow{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-left:calc(var(--sal) + 16px);margin:0 calc(-1*(var(--sar) + 16px)) 0 calc(-1*(var(--sal) + 16px));padding:0 calc(var(--sar) + 16px) 4px calc(var(--sal) + 16px);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hrow::-webkit-scrollbar{display:none}
+.hrow .card{flex:0 0 clamp(138px,40vw,190px);scroll-snap-align:start}
+
+.empty{grid-column:1/-1;margin:8px 0;padding:30px 18px;text-align:center;color:var(--muted);background:var(--card);border-radius:14px;font-size:15px}
+
+/* ---------- поиск и фильтры ---------- */
+.search{display:flex;align-items:center;gap:10px;height:48px;padding:0 16px;border-radius:24px;background:var(--card);color:var(--muted);margin:10px 0 14px}
+.search svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;flex:none}
+.search input{flex:1;min-width:0;height:100%;border:0;background:transparent;color:#fff;font:inherit;font-size:16px;outline:none}
+.search input::placeholder{color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 calc(-1*(var(--sar) + 16px)) 18px calc(-1*(var(--sal) + 16px));padding:0 calc(var(--sar) + 16px) 0 calc(var(--sal) + 16px);scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;height:40px;padding:0 18px;border:0;border-radius:20px;background:var(--card);color:#fff;font-weight:600;font-size:15px;cursor:pointer}
+.chip[aria-pressed="true"]{background:#fff;color:#121316}
+
+/* ---------- профиль ---------- */
+.me{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 16px;background:var(--card);border-radius:18px}
+.me img{height:96px;width:auto}
+.me .bt{align-items:center;margin-top:14px}
+.me .bt b{font-size:34px}
+.me .bt small{font-size:10px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.fact{padding:14px 16px;border-radius:14px;background:var(--card)}
+.fact dt{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fact dd{margin:3px 0 0;font-size:20px;font-weight:700}
+.facts{margin-bottom:0}
+dl{margin:0}
+
+/* ---------- нижняя панель ---------- */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;background:var(--bg);border-top:1px solid var(--line);
+  padding:0 var(--sar) var(--sab) var(--sal)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:var(--bar);border:0;background:none;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer}
+.tab svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tab[aria-current="true"]{color:#fff}
+.tab[aria-current="true"] svg{fill:currentColor}
+.tab[aria-current="true"] svg .k{stroke:var(--bg)}
+
+/* ---------- боковое меню ---------- */
+#drawer{position:fixed;inset:0;z-index:50;display:flex}
+.dr-bg{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.dr{position:relative;width:min(82vw,320px);height:100%;background:#1a1b1f;padding:calc(var(--sat) + 16px) 16px calc(var(--sab) + 16px) calc(var(--sal) + 16px);display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.dr .brand{margin:4px 0 18px}
+.dr a,.dr button.dl{display:flex;align-items:center;gap:14px;height:52px;padding:0 12px;border:0;border-radius:12px;background:none;color:#fff;font-size:18px;font-weight:600;text-align:left;cursor:pointer}
+.dr a:active,.dr button.dl:active{background:var(--card)}
+.dr svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dr p{margin:auto 0 0;color:var(--muted);font-size:13px;padding:0 12px}
+
+/* ---------- плеер ---------- */
+#player{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:#000;height:100vh;height:100dvh}
+.pbar{flex:none;display:flex;align-items:center;gap:8px;height:calc(42px + var(--sat));background:#16171b;border-bottom:1px solid var(--line);
+  padding:var(--sat) calc(var(--sar) + 8px) 0 calc(var(--sal) + 8px)}
+.pb{display:inline-flex;align-items:center;gap:4px;height:34px;padding:0 12px 0 6px;border:0;border-radius:17px;background:var(--card);color:#fff;font-weight:600;font-size:14px;cursor:pointer;flex:none}
+.pb svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.pb.sq{padding:0;width:34px;justify-content:center}
+#ptitle{margin:0;flex:1;min-width:0;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phud{display:flex;gap:6px;flex:none}
+.stat{display:flex;align-items:baseline;gap:5px;height:30px;padding:0 10px;border-radius:15px;background:var(--card);line-height:30px}
+.stat small{font-size:11px;color:var(--muted)}
+.stat b{font-size:14px;font-variant-numeric:tabular-nums}
+.pbody{position:relative;flex:1;min-height:0;background:#000}
+.pbody.ui{background:var(--bg);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px calc(var(--sar) + 14px) calc(var(--sab) + 14px) calc(var(--sal) + 14px)}
+.loading{position:absolute;inset:0;margin:0;display:grid;place-items:center;color:#8e93a0;font-size:15px}
+.pbody iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
+
+/* ---------- лёгкие игры ---------- */
+.gwrap{display:flex;flex-direction:column;align-items:center;gap:14px;min-height:100%;justify-content:center}
+.gboard{width:min(100%,440px,calc(100dvh - 300px));min-width:250px}
+.gside{display:flex;flex-direction:column;align-items:center;gap:12px;width:min(100%,440px)}
+.help{margin:0;color:var(--muted);font-size:14px;text-align:center}
+.note{margin:0;min-height:1.4em;text-align:center;font-weight:700}
+.row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 24px;border:0;border-radius:23px;background:#fff;color:#121316;font-weight:700;font-size:16px;cursor:pointer}
+.btn:active{opacity:.8}
+.btn.ghost{background:var(--card);color:#fff}
+.btn.sm{height:38px;padding:0 16px;font-size:14px}
+.btn[aria-pressed="true"]{background:var(--teal);color:#06242a}
+.seg{display:flex;justify-content:center;gap:8px}
+.cv{display:block;width:100%;aspect-ratio:1;border-radius:14px;background:#1b1d22;touch-action:none}
+.dpad{display:grid;grid-template-columns:repeat(3,68px);grid-template-rows:repeat(2,60px);gap:8px}
+.dpad button{border:0;border-radius:14px;background:var(--card2);color:#fff;font-size:24px;font-weight:700;cursor:pointer;touch-action:none}
+.dpad button:active{background:var(--teal);color:#06242a}
+.dpad .u{grid-column:2;grid-row:1}
+.dpad .l{grid-column:1;grid-row:2}
+.dpad .d{grid-column:2;grid-row:2}
+.dpad .r{grid-column:3;grid-row:2}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px;background:#2a2d34;border-radius:14px;touch-action:none}
+.tile2{aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:clamp(1.2rem,7vw,2rem);background:#363a43;font-variant-numeric:tabular-nums}
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mc{aspect-ratio:1;border-radius:12px;border:0;padding:0;font-size:clamp(1.6rem,9vw,2.4rem);line-height:1;background:linear-gradient(135deg,#2a8d9c,#3b82f6);cursor:pointer}
+.mc .f{display:none}
+.mc.up,.mc.done{background:#2d3036;outline:2px solid #3a3e46}
+.mc.up .f,.mc.done .f{display:inline}
+.mc.done{outline-color:var(--teal)}
+.b3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cell{aspect-ratio:1;border-radius:14px;border:0;background:var(--card);color:#fff;font-weight:800;font-size:clamp(2rem,13vw,3.4rem);padding:0;cursor:pointer}
+.cell:disabled{cursor:default}
+.cell.x{color:#5aa2ff}
+.cell.o{color:#ff6b6b}
+.cell.win{background:#17434b}
+
+@media (orientation:landscape) and (max-height:560px){
+  .gwrap{flex-direction:row;justify-content:center;gap:24px}
+  .gboard{width:min(calc(100dvh - 90px),46vw);min-width:0}
+  .gside{width:min(100%,240px)}
+  .top{padding-top:calc(var(--sat) + 4px);padding-bottom:4px}
+  :root{--bar:52px}
+  .tab{flex-direction:row;gap:8px;font-size:15px}
+  .tab svg{width:24px;height:24px}
+}
+@media (min-width:700px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+}
+@media (prefers-reduced-motion:no-preference){
+  .card .thumb{transition:opacity .12s}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="top">
+    <button class="ico" id="menuBtn" type="button" aria-label="Меню"><svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
+    <a class="brand" href="#" data-view="home" aria-label="PLAYCORE Gaming Platform">
+      <img class="mark" src="logo-mark.png" alt="" width="32" height="36">
+      <span class="bt"><b>PLAYCORE</b><small>GAMING PLATFORM</small></span>
+    </a>
+    <span class="sp"></span>
+    <button class="ico" id="searchBtn" type="button" aria-label="Поиск"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><path d="M20.5 20.5l-4-4"/></svg></button>
+    <button class="ico" id="favBtn" type="button" aria-label="Избранное"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.5-9.3C1.2 8.4 3.2 5 6.6 5c2 0 3.5 1.1 5.4 3 1.9-1.9 3.4-3 5.4-3 3.4 0 5.4 3.4 4.1 6.7C19.5 16.4 12 21 12 21z"/></svg></button>
+  </header>
+
+  <main>
+    <section class="view on" id="v-home">
+      <h2 class="sec">Рекомендуем</h2>
+      <div class="grid" id="recGrid"></div>
+
+      <div id="contWrap" hidden>
+        <h2 class="sec">Продолжить <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></h2>
+        <div class="hrow" id="contRow"></div>
+      </div>
+
+      <h2 class="sec">Лёгкие игры</h2>
+      <div class="hrow" id="easyRow"></div>
+    </section>
+
+    <section class="view" id="v-games">
+      <label class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7.5"/><path d="M20.5 20.5l-4-4"/></svg>
+        <input id="q" type="search" placeholder="Поиск игр" autocomplete="off" enterkeyhint="search" aria-label="Поиск игр">
+      </label>
+      <div class="chips" role="group" aria-label="Категории">
+        <button class="chip" type="button" data-cat="all">Все</button>
+        <button class="chip" type="button" data-cat="easy">Лёгкие</button>
+        <button class="chip" type="button" data-cat="sim">Симулятор</button>
+        <button class="chip" type="button" data-cat="sports">Спорт</button>
+      </div>
+      <div class="grid" id="allGrid"></div>
+    </section>
+
+    <section class="view" id="v-favs">
+      <h2 class="sec">Избранное</h2>
+      <div class="grid" id="favGrid"></div>
+    </section>
+
+    <section class="view" id="v-me">
+      <div class="me">
+        <img src="logo-mark.png" alt="PLAYCORE" width="85" height="96">
+        <span class="bt"><b>PLAYCORE</b><small>GAMING PLATFORM</small></span>
+      </div>
+      <h2 class="sec">О платформе</h2>
+      <dl class="facts">
+        <div class="fact"><dt>Владелец</dt><dd>Oyat</dd></div>
+        <div class="fact"><dt>Компания</dt><dd>Zenix Community</dd></div>
+      </dl>
+      <h2 class="sec">Рекорды</h2>
+      <dl class="facts" id="stats"></dl>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="Разделы">
+    <button class="tab" type="button" data-view="home" aria-current="true"><svg viewBox="0 0 24 24"><path d="M3.5 11L12 3.5 20.5 11V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg>Главная</button>
+    <button class="tab" type="button" data-view="games"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="10" rx="5"/><path class="k" d="M8 11v4M6 13h4M16 12.2h.01M18 14.4h.01"/></svg>Игры</button>
+    <button class="tab" type="button" data-view="favs"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.5-9.3C1.2 8.4 3.2 5 6.6 5c2 0 3.5 1.1 5.4 3 1.9-1.9 3.4-3 5.4-3 3.4 0 5.4 3.4 4.1 6.7C19.5 16.4 12 21 12 21z"/></svg>Избранное</button>
+    <button class="tab" type="button" data-view="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-6 8-6s7 1.5 8 6z"/></svg>Профиль</button>
+  </nav>
+</div>
+
+<div id="drawer" hidden>
+  <div class="dr-bg" id="drBg"></div>
+  <aside class="dr" aria-label="Меню">
+    <span class="brand"><img class="mark" src="logo-mark.png" alt="" width="32" height="36"><span class="bt"><b>PLAYCORE</b><small>GAMING PLATFORM</small></span></span>
+    <a href="#" data-view="home"><svg viewBox="0 0 24 24"><path d="M3.5 11L12 3.5 20.5 11V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg>Главная</a>
+    <a href="#" data-view="games"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="10" rx="5"/><path d="M8 11v4M6 13h4"/></svg>Все игры</a>
+    <a href="#" data-view="favs"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.5-9.3C1.2 8.4 3.2 5 6.6 5c2 0 3.5 1.1 5.4 3 1.9-1.9 3.4-3 5.4-3 3.4 0 5.4 3.4 4.1 6.7C19.5 16.4 12 21 12 21z"/></svg>Избранное</a>
+    <a href="#" data-view="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-6 8-6s7 1.5 8 6z"/></svg>Профиль</a>
+    <p>© 2026 PLAYCORE by Zenix Community</p>
+  </aside>
+</div>
+
+<div id="player" hidden>
+  <div class="pbar" id="pbar">
+    <button class="pb" id="pback" type="button" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Назад</button>
+    <h2 id="ptitle"></h2>
+    <div class="phud" id="phud"></div>
+    <button class="pb sq" id="pfs" type="button" aria-label="Во весь экран" hidden><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </div>
+  <div class="pbody" id="pbody"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var uid=0;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+/* ---------- хранилище ---------- */
+var store={};
+try{store=JSON.parse(localStorage.getItem('playcore')||'{}')||{}}catch(e){store={}}
+function getD(k,d){return store[k]===undefined?d:store[k]}
+function setD(k,v){store[k]=v;try{localStorage.setItem('playcore',JSON.stringify(store))}catch(e){}}
+
+/* ---------- обложки лёгких игр (SVG) ---------- */
+function svgOpen(u,c1,c2){
+  return '<svg viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="'+u+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+c1+'"/><stop offset="1" stop-color="'+c2+'"/></linearGradient></defs><rect width="400" height="400" fill="url(#'+u+')"/>';
+}
+var ART={
+  snake:function(u){
+    var p='M70 310H250V210H130V110H320';
+    return svgOpen(u,'#34d399','#0ea5e9')+
+      '<path d="'+p+'" fill="none" stroke="#06463a" stroke-opacity=".22" stroke-width="46" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 9)"/>'+
+      '<path d="'+p+'" fill="none" stroke="#fff" stroke-width="42" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<circle cx="320" cy="110" r="30" fill="#fff"/><circle cx="332" cy="100" r="6" fill="#0f1b33"/><circle cx="332" cy="122" r="6" fill="#0f1b33"/>'+
+      '<circle cx="330" cy="300" r="24" fill="#ef4444"/><path d="M330 276q4-14 16-16" fill="none" stroke="#166534" stroke-width="6" stroke-linecap="round"/></svg>';
+  },
+  '2048':function(u){
+    var t=[[60,60,'2','#ffffff'],[210,60,'4','#fff7ed'],[60,210,'8','#fed7aa'],[210,210,'16','#fdba74']];
+    return svgOpen(u,'#fbbf24','#f97316')+t.map(function(a){
+      return '<rect x="'+a[0]+'" y="'+a[1]+'" width="130" height="130" rx="22" fill="'+a[3]+'"/><text x="'+(a[0]+65)+'" y="'+(a[1]+86)+'" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="'+(a[2].length>1?56:64)+'" fill="#7c2d12">'+a[2]+'</text>';
+    }).join('')+'</svg>';
+  },
+  memory:function(u){
+    var side='fill="#fff" fill-opacity=".28" stroke="#fff" stroke-opacity=".75" stroke-width="4"';
+    return svgOpen(u,'#8b5cf6','#3b82f6')+
+      '<g transform="rotate(-12 110 200)"><rect x="55" y="120" width="110" height="160" rx="18" '+side+'/></g>'+
+      '<g transform="rotate(12 290 200)"><rect x="235" y="120" width="110" height="160" rx="18" '+side+'/></g>'+
+      '<rect x="140" y="92" width="120" height="190" rx="20" fill="#fff"/>'+
+      '<path transform="translate(200 190) scale(1.7)" d="M0 14C-22 -2 -16 -22 0 -12C16 -22 22 -2 0 14Z" fill="#f43f5e"/></svg>';
+  },
+  tictactoe:function(u){
+    return svgOpen(u,'#ec4899','#8b5cf6')+
+      '<path d="M155 70V330M245 70V330M70 155H330M70 245H330" stroke="#fff" stroke-opacity=".85" stroke-width="12" stroke-linecap="round"/>'+
+      '<g stroke="#fff" stroke-width="14" stroke-linecap="round"><path d="M94 94l36 36M130 94L94 130"/><path d="M270 270l36 36M306 270l-36 36"/></g>'+
+      '<g fill="none" stroke="#fde68a" stroke-width="14"><circle cx="200" cy="200" r="22"/><circle cx="288" cy="112" r="22"/></g></svg>';
+  }
+};
+
+/* ---------- данные ---------- */
+var GAMES=[
+  {id:'fishing',name:'Рыбный Магнат',cat:'sim',tag:'Симулятор',cover:'fish-cover.webp',src:'fishing.html',fs:true},
+  {id:'pong',name:'Ping Pong Arena',cat:'sports',tag:'Спорт',cover:'pong-cover.webp',src:'pong.html',fs:true},
+  {id:'snake',name:'Змейка',cat:'easy',tag:'Лёгкая игра',init:snakeGame},
+  {id:'2048',name:'2048',cat:'easy',tag:'Лёгкая игра',init:game2048},
+  {id:'memory',name:'Найди пару',cat:'easy',tag:'Лёгкая игра',init:memoryGame},
+  {id:'tictactoe',name:'Крестики-нолики',cat:'easy',tag:'Лёгкая игра',init:tttGame}
+];
+function byId(id){return GAMES.filter(function(g){return g.id===id})[0]}
+var favs=getD('favs',[]);if(!Array.isArray(favs))favs=[];
+var recent=getD('recent',[]);if(!Array.isArray(recent))recent=[];
+var state={cat:'all',q:'',view:'home'};
+
+/* ---------- отрисовка ---------- */
+var PAD='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10a5 5 0 0 1 0 10H7A5 5 0 0 1 7 7zm1 3v1H7v2h1v1h2v-1h1v-2h-1v-1zm7.5 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm2 2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" fill-rule="evenodd"/></svg>';
+function artHtml(g){
+  return g.cover?'<img src="'+g.cover+'" alt="" loading="lazy" decoding="async" width="360" height="360">':ART[g.id]('a'+(++uid));
+}
+function heartBtn(g){
+  var on=favs.indexOf(g.id)>=0;
+  return '<button class="heart" type="button" data-fav="'+g.id+'" aria-pressed="'+on+'" aria-label="'+(on?'Убрать из избранного: ':'В избранное: ')+esc(g.name)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.5-9.3C1.2 8.4 3.2 5 6.6 5c2 0 3.5 1.1 5.4 3 1.9-1.9 3.4-3 5.4-3 3.4 0 5.4 3.4 4.1 6.7C19.5 16.4 12 21 12 21z"/></svg></button>';
+}
+function card(g){
+  return '<div class="card" role="link" tabindex="0" data-open="'+g.id+'" aria-label="Играть: '+esc(g.name)+'"><div class="thumb">'+artHtml(g)+heartBtn(g)+'</div><h3>'+esc(g.name)+'</h3><p class="meta">'+PAD+esc(g.tag)+'</p></div>';
+}
+function list(arr,empty){return arr.length?arr.map(card).join(''):'<p class="empty">'+empty+'</p>'}
+function renderHome(){
+  $('#recGrid').innerHTML=GAMES.slice(0,4).map(card).join('');
+  $('#easyRow').innerHTML=GAMES.filter(function(g){return g.cat==='easy'}).map(card).join('');
+  var rc=recent.map(byId).filter(Boolean);
+  $('#contWrap').hidden=!rc.length;
+  $('#contRow').innerHTML=rc.map(card).join('');
+}
+function renderGames(){
+  var q=state.q;
+  var arr=GAMES.filter(function(g){return (state.cat==='all'||g.cat===state.cat)&&(!q||(g.name+' '+g.tag).toLowerCase().indexOf(q)>=0)});
+  $('#allGrid').innerHTML=list(arr,'Ничего не найдено.');
+  $$('.chip').forEach(function(c){c.setAttribute('aria-pressed',String(c.dataset.cat===state.cat))});
+}
+function renderFavs(){
+  $('#favGrid').innerHTML=list(GAMES.filter(function(g){return favs.indexOf(g.id)>=0}),'Пока пусто. Нажмите сердечко на любой игре, и она появится здесь.');
+  $('#favBtn').classList.toggle('has',favs.length>0);
+}
+function renderStats(){
+  var t=getD('ttt',{w:0,d:0,l:0}),m=getD('memory',0);
+  var items=[['Змейка',getD('snake',0)],['2048',getD('g2048',0)],['Найди пару',m?m+' ходов':'—'],['Крестики-нолики',t.w+' побед']];
+  $('#stats').innerHTML=items.map(function(i){return '<div class="fact"><dt>'+i[0]+'</dt><dd>'+i[1]+'</dd></div>'}).join('');
+}
+function renderAll(){renderHome();renderGames();renderFavs();renderStats()}
+function toggleFav(id){
+  var i=favs.indexOf(id);
+  if(i>=0)favs.splice(i,1);else favs.push(id);
+  setD('favs',favs);renderAll();
+}
+
+/* ---------- вкладки ---------- */
+function setView(v,focusSearch){
+  state.view=v;
+  $$('.view').forEach(function(s){s.classList.toggle('on',s.id==='v-'+v)});
+  $$('.tab').forEach(function(t){t.setAttribute('aria-current',String(t.dataset.view===v))});
+  if(v==='me')renderStats();
+  window.scrollTo(0,0);
+  if(focusSearch)setTimeout(function(){$('#q').focus()},30);
+}
+var drawer=$('#drawer');
+function closeDrawer(){drawer.hidden=true}
+$('#menuBtn').addEventListener('click',function(){drawer.hidden=false});
+$('#drBg').addEventListener('click',closeDrawer);
+$('#searchBtn').addEventListener('click',function(){setView('games',true)});
+$('#favBtn').addEventListener('click',function(){setView('favs')});
+document.addEventListener('click',function(e){
+  var f=e.target.closest('[data-fav]');
+  if(f){e.stopPropagation();toggleFav(f.dataset.fav);return}
+  var v=e.target.closest('[data-view]');
+  if(v){e.preventDefault();closeDrawer();setView(v.dataset.view);return}
+  var c=e.target.closest('[data-cat]');
+  if(c){state.cat=c.dataset.cat;renderGames();return}
+  var o=e.target.closest('[data-open]');
+  if(o)openGame(o.dataset.open);
+});
+document.addEventListener('keydown',function(e){
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.card')){e.preventDefault();openGame(e.target.dataset.open)}
+});
+$('#q').addEventListener('input',function(){
+  state.q=this.value.trim().toLowerCase();
+  if(state.q&&state.cat!=='all')state.cat='all';
+  renderGames();
+});
+
+/* ---------- плеер ---------- */
+var app=$('#app'),player=$('#player'),pbody=$('#pbody'),ptitle=$('#ptitle'),phud=$('#phud'),pfs=$('#pfs'),pbar=$('#pbar');
+var cur=null,curId=null,navigated=false,savedY=0;
+function hud(a,b){
+  phud.innerHTML=[a,b].map(function(x){return '<div class="stat"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join('');
+}
+function clearContent(){if(cur){cur.destroy();cur=null}pbody.innerHTML=''}
+function canFs(){var d=document.documentElement;return !!(d.requestFullscreen||d.webkitRequestFullscreen)}
+function enterFs(){
+  try{
+    var d=document.documentElement;
+    if(document.fullscreenElement||document.webkitFullscreenElement)return;
+    var p=d.requestFullscreen?d.requestFullscreen({navigationUI:'hide'}):(d.webkitRequestFullscreen&&d.webkitRequestFullscreen());
+    if(p&&p.catch)p.catch(function(){});
+  }catch(e){}
+}
+function exitFs(){
+  try{
+    if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});
+    else if(document.webkitFullscreenElement&&document.webkitExitFullscreen)document.webkitExitFullscreen();
+  }catch(e){}
+}
+/* вызывается прямо из тапа — только так браузер разрешает полный экран */
+function openGame(id){
+  var g=byId(id);if(!g)return;
+  if(g.fs)enterFs();
+  if(location.hash==='#play-'+id){route();return}
+  navigated=true;
+  location.hash='play-'+id;
+}
+function showPlayer(g){
+  if(curId===g.id&&!player.hidden)return;
+  clearContent();
+  if(player.hidden)savedY=window.scrollY||0;
+  curId=g.id;ptitle.textContent=g.name;phud.innerHTML='';
+  recent=[g.id].concat(recent.filter(function(x){return x!==g.id})).slice(0,8);setD('recent',recent);
+  closeDrawer();
+  app.style.display='none';          // портал под игрой не рисуется и не расходует GPU
+  player.hidden=false;
+  document.documentElement.style.overflow='hidden';
+  if(g.src){
+    pbody.className='pbody';
+    pbody.innerHTML='<p class="loading">Загрузка…</p><iframe title="'+esc(g.name)+'" src="'+g.src+'" allow="fullscreen; autoplay; accelerometer; gyroscope" allowfullscreen></iframe>';
+    var fr=$('iframe',pbody);fr.addEventListener('load',function(){var l=$('.loading',pbody);if(l)l.remove();try{fr.contentWindow.focus()}catch(e){}});
+  }else{
+    pbody.className='pbody ui';
+    pbody.innerHTML='<div class="gwrap" id="stage"></div>';
+    cur=g.init($('#stage'));
+  }
+  pfs.hidden=!canFs();
+}
+function hidePlayer(){
+  if(player.hidden)return;
+  clearContent();
+  player.hidden=true;curId=null;
+  app.style.display='';
+  document.documentElement.style.overflow='';
+  exitFs();
+  renderAll();
+  window.scrollTo(0,savedY);
+}
+function route(){
+  var h=location.hash.slice(1);
+  if(h.indexOf('play-')===0){var g=byId(h.slice(5));if(g){showPlayer(g);return}}
+  hidePlayer();
+}
+window.addEventListener('hashchange',route);
+function goBack(){
+  if(navigated){navigated=false;history.back()}else{location.hash='home'}
+}
+$('#pback').addEventListener('click',goBack);
+pfs.addEventListener('click',function(){
+  if(document.fullscreenElement||document.webkitFullscreenElement)exitFs();else enterFs();
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!player.hidden&&!document.fullscreenElement)goBack()});
+
+/* ---------- помощники лёгких игр ---------- */
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+/* свайп срабатывает сразу, как палец прошёл порог, а не после отпускания */
+function onSwipe(el,cb,tapCb){
+  var sx=0,sy=0,on=false,id=-1;
+  el.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;on=true;id=e.pointerId});
+  el.addEventListener('pointermove',function(e){
+    if(!on||e.pointerId!==id)return;
+    var dx=e.clientX-sx,dy=e.clientY-sy;
+    if(Math.max(Math.abs(dx),Math.abs(dy))<20)return;
+    on=false;
+    if(Math.abs(dx)>Math.abs(dy))cb(dx>0?1:-1,0);else cb(0,dy>0?1:-1);
+  });
+  el.addEventListener('pointerup',function(e){
+    if(!on||e.pointerId!==id)return;
+    on=false;if(tapCb)tapCb();
+  });
+  el.addEventListener('pointercancel',function(){on=false});
+}
+
+/* ===== Змейка ===== */
+function snakeGame(stage){
+  var N=20,S=20;
+  stage.innerHTML='<div class="gboard"><canvas class="cv" width="400" height="400" aria-label="Поле"></canvas></div>'+
+    '<div class="gside"><p class="help">Свайпайте по полю или жмите стрелки.</p>'+
+    '<div class="dpad"><button class="u" data-d="0,-1" aria-label="Вверх">↑</button><button class="l" data-d="-1,0" aria-label="Влево">←</button><button class="d" data-d="0,1" aria-label="Вниз">↓</button><button class="r" data-d="1,0" aria-label="Вправо">→</button></div></div>';
+  var cv=stage.querySelector('canvas'),ctx=cv.getContext('2d');
+  var snake,dir,queue,food,score,st,timer;
+  function best(){return getD('snake',0)}
+  function speed(){return Math.max(60,125-score*2)}
+  function placeFood(){
+    do{food={x:Math.floor(Math.random()*N),y:Math.floor(Math.random()*N)}}
+    while(snake.some(function(s){return s.x===food.x&&s.y===food.y}));
+  }
+  function reset(){
+    clearInterval(timer);
+    snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];dir={x:1,y:0};queue=[];score=0;st='idle';
+    placeFood();hud(['Счёт',0],['Рекорд',best()]);draw();
+  }
+  function start(){if(st==='running')return;st='running';clearInterval(timer);timer=setInterval(tick,speed())}
+  function over(){
+    clearInterval(timer);st='over';
+    if(score>best())setD('snake',score);
+    hud(['Счёт',score],['Рекорд',best()]);draw();
+  }
+  function tick(){
+    if(queue.length)dir=queue.shift();
+    var h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+    if(h.x<0||h.y<0||h.x>=N||h.y>=N||snake.some(function(s){return s.x===h.x&&s.y===h.y})){over();return}
+    snake.unshift(h);
+    if(h.x===food.x&&h.y===food.y){
+      score++;if(score>best())setD('snake',score);
+      placeFood();hud(['Счёт',score],['Рекорд',best()]);
+      clearInterval(timer);timer=setInterval(tick,speed());
+    }else snake.pop();
+    draw();
+  }
+  function input(x,y){
+    if(st==='over')reset();
+    var last=queue.length?queue[queue.length-1]:dir;
+    if(!(x===-last.x&&y===-last.y)&&!(x===last.x&&y===last.y)&&queue.length<2)queue.push({x:x,y:y});
+    if(st!=='running')start();
+  }
+  function rr(x,y,w,h,r,fill){
+    ctx.fillStyle=fill;ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h);
+    ctx.fill();
+  }
+  function draw(){
+    ctx.fillStyle='#1b1d22';ctx.fillRect(0,0,400,400);
+    ctx.fillStyle='#20232a';
+    for(var i=0;i<N;i++)for(var j=0;j<N;j++)if((i+j)%2===0)ctx.fillRect(i*S,j*S,S,S);
+    ctx.fillStyle='#ef4444';ctx.beginPath();ctx.arc(food.x*S+S/2,food.y*S+S/2,S*0.36,0,Math.PI*2);ctx.fill();
+    snake.forEach(function(s,k){rr(s.x*S+1,s.y*S+1,S-2,S-2,k===0?7:5,k===0?'#7dd3e0':'#3fb4c4')});
+    if(st!=='running'){
+      ctx.fillStyle='rgba(18,19,22,.62)';ctx.fillRect(0,0,400,400);
+      ctx.fillStyle='#fff';ctx.textAlign='center';
+      ctx.font='800 30px system-ui, sans-serif';
+      ctx.fillText(st==='over'?'Игра окончена':'Змейка',200,110);
+      ctx.font='500 16px system-ui, sans-serif';
+      if(st==='over')ctx.fillText('Счёт: '+score,200,142);
+      ctx.fillText('Тапните по полю, чтобы начать',200,st==='over'?174:146);
+    }
+  }
+  var keys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
+  function key(e){
+    var k=keys[e.key];
+    if(k){e.preventDefault();input(k[0],k[1])}
+    else if(e.key===' '){e.preventDefault();if(st==='over')reset();start()}
+  }
+  document.addEventListener('keydown',key);
+  onSwipe(cv,input,function(){if(st==='over')reset();start()});
+  stage.querySelectorAll('.dpad button').forEach(function(b){
+    b.addEventListener('pointerdown',function(e){e.preventDefault();var d=b.dataset.d.split(',');input(+d[0],+d[1])});
+  });
+  reset();
+  return {destroy:function(){clearInterval(timer);document.removeEventListener('keydown',key)}};
+}
+
+/* ===== 2048 ===== */
+function game2048(stage){
+  stage.innerHTML='<div class="gboard"><div class="board" id="b2048" aria-label="Поле 2048"></div></div>'+
+    '<div class="gside"><p class="help">Свайпайте по полю, чтобы сдвигать плитки.</p><p class="note" id="msg"></p>'+
+    '<div class="row"><button class="btn" id="newg" type="button">Новая игра</button></div></div>';
+  var boardEl=$('#b2048'),msg=$('#msg');
+  var b,score,over,won;
+  var COL={2:['#e8ecf4','#1b1d22'],4:['#d3e4ff','#1b1d22'],8:['#ffb86b','#1b1d22'],16:['#ff9a4d','#1b1d22'],32:['#ff7a59','#fff'],
+    64:['#f0524a','#fff'],128:['#6aa7ff','#1b1d22'],256:['#4a8cf5','#fff'],512:['#2f67c4','#fff'],1024:['#7a5cff','#fff'],2048:['#14b87a','#fff']};
+  function best(){return getD('g2048',0)}
+  function spawn(){
+    var em=[];b.forEach(function(v,i){if(!v)em.push(i)});
+    if(!em.length)return;
+    b[em[Math.floor(Math.random()*em.length)]]=Math.random()<0.9?2:4;
+  }
+  function render(){
+    boardEl.innerHTML=b.map(function(v){
+      if(!v)return '<div class="tile2"></div>';
+      var c=COL[v]||['#0f1b33','#fff'];
+      var fs=v>=1024?';font-size:clamp(.85rem,4.6vw,1.4rem)':'';
+      return '<div class="tile2" style="background:'+c[0]+';color:'+c[1]+fs+'">'+v+'</div>';
+    }).join('');
+    hud(['Счёт',score],['Рекорд',best()]);
+  }
+  function reset(){b=new Array(16).fill(0);score=0;over=false;won=false;msg.textContent='';spawn();spawn();render()}
+  function slide(line){
+    var a=line.filter(function(v){return v}),gained=0;
+    for(var i=0;i<a.length-1;i++){
+      if(a[i]===a[i+1]){a[i]*=2;gained+=a[i];a.splice(i+1,1)}
+    }
+    while(a.length<4)a.push(0);
+    return {line:a,gained:gained};
+  }
+  function lines(dx,dy){
+    var L=[],i,j,l;
+    for(i=0;i<4;i++){
+      l=[];
+      for(j=0;j<4;j++){
+        var r=dx!==0?i:j,c=dx!==0?j:i;
+        l.push(r*4+c);
+      }
+      if(dx>0||dy>0)l.reverse();
+      L.push(l);
+    }
+    return L;
+  }
+  function canMove(){
+    if(b.some(function(v){return !v}))return true;
+    for(var r=0;r<4;r++)for(var c=0;c<4;c++){
+      var v=b[r*4+c];
+      if(c<3&&b[r*4+c+1]===v)return true;
+      if(r<3&&b[(r+1)*4+c]===v)return true;
+    }
+    return false;
+  }
+  function move(dx,dy){
+    if(over)return;
+    var changed=false,gain=0;
+    lines(dx,dy).forEach(function(idx){
+      var res=slide(idx.map(function(i){return b[i]}));
+      gain+=res.gained;
+      res.line.forEach(function(v,k){if(b[idx[k]]!==v){changed=true;b[idx[k]]=v}});
+    });
+    if(!changed)return;
+    score+=gain;if(score>best())setD('g2048',score);
+    spawn();render();
+    if(!won&&b.indexOf(2048)>=0){won=true;msg.textContent='Вы собрали 2048! Можно играть дальше.'}
+    if(!canMove()){over=true;msg.textContent='Ходов больше нет. Счёт: '+score}
+  }
+  var keys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
+  function key(e){var k=keys[e.key];if(k){e.preventDefault();move(k[0],k[1])}}
+  document.addEventListener('keydown',key);
+  onSwipe(boardEl,move);
+  $('#newg').addEventListener('click',reset);
+  reset();
+  return {destroy:function(){document.removeEventListener('keydown',key)}};
+}
+
+/* ===== Найди пару ===== */
+function memoryGame(stage){
+  var E=['🦊','🐙','🚀','🍕','🎸','🌵','🐳','🍩'];
+  stage.innerHTML='<div class="gboard"><div class="mem" id="mem"></div></div>'+
+    '<div class="gside"><p class="help">Открывайте по две карточки. Найдите все 8 пар за минимум ходов.</p><p class="note" id="msg"></p>'+
+    '<div class="row"><button class="btn" id="newg" type="button">Новая игра</button></div></div>';
+  var memEl=$('#mem'),msg=$('#msg');
+  var deck,open,locked,moves,found,dead=false,tm=null;
+  function best(){return getD('memory',0)}
+  function bestTxt(){return best()?best():'-'}
+  function reset(){
+    clearTimeout(tm);
+    deck=shuffle(E.concat(E));open=[];locked=false;moves=0;found=0;msg.textContent='';
+    memEl.innerHTML=deck.map(function(e,i){
+      return '<button class="mc" type="button" data-i="'+i+'" aria-label="Карточка '+(i+1)+'"><span class="f">'+e+'</span></button>';
+    }).join('');
+    hud(['Ходы',0],['Рекорд',bestTxt()]);
+  }
+  memEl.addEventListener('click',function(e){
+    var el=e.target.closest('.mc');
+    if(!el||locked||dead)return;
+    if(el.classList.contains('up')||el.classList.contains('done'))return;
+    el.classList.add('up');open.push(+el.dataset.i);
+    if(open.length<2)return;
+    moves++;hud(['Ходы',moves],['Рекорд',bestTxt()]);
+    var a=open[0],c=open[1],ea=memEl.children[a],ec=memEl.children[c];
+    if(deck[a]===deck[c]){
+      ea.classList.replace('up','done');ec.classList.replace('up','done');
+      open=[];found++;
+      if(found===E.length){
+        if(!best()||moves<best())setD('memory',moves);
+        hud(['Ходы',moves],['Рекорд',bestTxt()]);
+        msg.textContent='Все пары найдены за '+moves+' ходов.';
+      }
+    }else{
+      locked=true;
+      tm=setTimeout(function(){ea.classList.remove('up');ec.classList.remove('up');open=[];locked=false},700);
+    }
+  });
+  $('#newg').addEventListener('click',reset);
+  reset();
+  return {destroy:function(){dead=true;clearTimeout(tm)}};
+}
+
+/* ===== Крестики-нолики ===== */
+function tttGame(stage){
+  stage.innerHTML='<div class="gboard"><div class="b3" id="b3"></div></div>'+
+    '<div class="gside"><div class="seg" role="group" aria-label="Уровень"><button class="btn ghost sm" type="button" data-l="easy">Лёгкий</button><button class="btn ghost sm" type="button" data-l="hard">Непобедимый</button></div>'+
+    '<p class="help">Вы играете за X и ходите первым.</p><p class="note" id="msg"></p>'+
+    '<div class="row"><button class="btn" id="again" type="button">Играть снова</button></div></div>';
+  var boardEl=$('#b3'),msg=$('#msg');
+  var LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  var b,over,busy,level=getD('tttLevel','easy'),stats=getD('ttt',{w:0,d:0,l:0}),tm=null,dead=false,winLine=[];
+  function res(bd){
+    for(var i=0;i<LINES.length;i++){
+      var L=LINES[i];
+      if(bd[L[0]]&&bd[L[0]]===bd[L[1]]&&bd[L[0]]===bd[L[2]])return {w:bd[L[0]],line:L};
+    }
+    if(bd.every(function(v){return v}))return {w:'draw',line:[]};
+    return null;
+  }
+  function mm(bd,p){
+    var r=res(bd);
+    if(r)return r.w==='O'?1:(r.w==='X'?-1:0);
+    var bestS=p==='O'?-2:2;
+    for(var i=0;i<9;i++){
+      if(bd[i])continue;
+      bd[i]=p;var s=mm(bd,p==='O'?'X':'O');bd[i]=null;
+      bestS=p==='O'?Math.max(bestS,s):Math.min(bestS,s);
+    }
+    return bestS;
+  }
+  function cpu(){
+    var em=[];for(var i=0;i<9;i++)if(!b[i])em.push(i);
+    if(level==='easy'&&Math.random()<0.5)return em[Math.floor(Math.random()*em.length)];
+    var bs=-2,mv=[];
+    em.forEach(function(i){
+      b[i]='O';var s=mm(b,'X');b[i]=null;
+      if(s>bs){bs=s;mv=[i]}else if(s===bs)mv.push(i);
+    });
+    return mv[Math.floor(Math.random()*mv.length)];
+  }
+  function showHud(){hud(['Победы',stats.w],['Поражения',stats.l])}
+  function render(){
+    boardEl.innerHTML=b.map(function(v,i){
+      var cls='cell'+(v==='X'?' x':v==='O'?' o':'')+(winLine.indexOf(i)>=0?' win':'');
+      return '<button class="'+cls+'" type="button" data-i="'+i+'" aria-label="Клетка '+(i+1)+'"'+((v||over||busy)?' disabled':'')+'>'+(v||'')+'</button>';
+    }).join('');
+    stage.querySelectorAll('.seg .btn').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.l===level))});
+  }
+  function finish(r){
+    over=true;winLine=r.line;
+    if(r.w==='X'){stats.w++;msg.textContent='Вы победили!'}
+    else if(r.w==='O'){stats.l++;msg.textContent='Победил компьютер.'}
+    else{stats.d++;msg.textContent='Ничья.'}
+    setD('ttt',stats);showHud();
+  }
+  function reset(){
+    clearTimeout(tm);b=new Array(9).fill(null);over=false;busy=false;winLine=[];msg.textContent='Ваш ход.';
+    showHud();render();
+  }
+  boardEl.addEventListener('click',function(e){
+    var el=e.target.closest('.cell');
+    if(!el||over||busy||dead)return;
+    var i=+el.dataset.i;if(b[i])return;
+    b[i]='X';
+    var r=res(b);
+    if(r){finish(r);render();return}
+    busy=true;msg.textContent='Компьютер думает…';render();
+    tm=setTimeout(function(){
+      if(dead)return;
+      b[cpu()]='O';busy=false;
+      var r2=res(b);
+      if(r2)finish(r2);else msg.textContent='Ваш ход.';
+      render();
+    },300);
+  });
+  stage.querySelectorAll('.seg .btn').forEach(function(x){
+    x.addEventListener('click',function(){level=x.dataset.l;setD('tttLevel',level);reset()});
+  });
+  $('#again').addEventListener('click',reset);
+  reset();
+  return {destroy:function(){dead=true;clearTimeout(tm)}};
+}
+
+/* ---------- запуск ---------- */
+renderAll();
+route();
+})();
+</script>
+</body>
+</html>
